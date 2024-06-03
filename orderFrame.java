@@ -6,9 +6,12 @@ import java.awt.event.MouseEvent;
 public class orderFrame extends JFrame {
     String[] pageName;
     int[] menuNum;
-    Option hamOp, sideOp, beverOp;
     private static final int FRAME_WIDTH = 600;
     private static final int FRAME_HEIGHT = 800;
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+    private order basketPanel;
+    private menuPage menuPagePanel;
 
     public orderFrame() {
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
@@ -16,8 +19,11 @@ public class orderFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout);
+
         pageName = new String[]{"HAMBURGER", "SIDEDISH", "BEVERAGE"};
-        menuNum = new int[]{10, 10, 10};
+        menuNum = new int[]{2, 2, 2};
 
         // 상단 버튼
         JPanel banner = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -35,32 +41,11 @@ public class orderFrame extends JFrame {
         categoryArea.add(btnBeverage);
         categoryArea.setBackground(Color.gray);
 
-        // CardLayout을 사용한 페이지 전환 패널
-        menuPage menuPage = new menuPage(pageName, menuNum);
-        menuPage.setBounds(0, 95, FRAME_WIDTH, 500);
-
-        btnHamburger.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                menuPage.showPage("HAMBURGER");
-            }
-        });
-        btnSidedish.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                menuPage.showPage("SIDEDISH");
-            }
-        });
-        btnBeverage.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                menuPage.showPage("BEVERAGE");
-            }
-        });
-
         // 장바구니
-        JPanel basketArea = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        basketArea.setBackground(Color.white);
+        basketPanel = new order();
+        JScrollPane basketScrollPane = new JScrollPane(basketPanel);
+        basketScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        basketScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         // 결제 버튼
         JButton btnPay = new JButton("결제");
@@ -68,31 +53,52 @@ public class orderFrame extends JFrame {
         // 위치 조정
         categoryArea.setBounds(0, 35, FRAME_WIDTH, 60);
         banner.setBounds(0, 0, FRAME_WIDTH, 35);
-        menuPage.setBounds(0, 95, FRAME_WIDTH, 500);
-        basketArea.setBounds(10, 600, FRAME_WIDTH - 120, 160);
+        mainPanel.setBounds(0, 95, FRAME_WIDTH, 500);
+        basketScrollPane.setBounds(10, 600, FRAME_WIDTH - 120, 160);
         btnPay.setBounds(490, 630, 90, 120);
 
-        // add로 추가하기
-        getContentPane().add(banner);
-        getContentPane().add(menuPage); // menuPage 추가
-        getContentPane().add(basketArea);
-        getContentPane().add(btnPay);
-        getContentPane().add(categoryArea);
+        // 메뉴 페이지 패널
+        menuPagePanel = new menuPage(pageName, menuNum, basketPanel, mainPanel, cardLayout);
+        mainPanel.add(menuPagePanel, "menuPanel");
 
         // 홈 화면 패널
         JPanel homePanel = createHomePanel();
         homePanel.setBounds(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
-        getContentPane().add(homePanel);
-        homePanel.setVisible(true);
+        mainPanel.add(homePanel, "homePanel");
+        cardLayout.show(mainPanel, "homePanel");
 
+        // add로 추가하기
+        getContentPane().add(banner);
+        getContentPane().add(mainPanel); // mainPanel 추가
+        getContentPane().add(basketScrollPane);
+        getContentPane().add(btnPay);
+        getContentPane().add(categoryArea);
+
+        // 이벤트 리스너
         btnHome.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                menuPage.setVisible(false);
-                categoryArea.setVisible(false);
-                basketArea.setVisible(false);
-                btnPay.setVisible(false);
-                homePanel.setVisible(true);
+                basketPanel.clearOrder(); // 장바구니 비우기
+                cardLayout.show(mainPanel, "homePanel"); // 홈 화면으로 이동
+            }
+        });
+
+        btnHamburger.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                showMenuPage("HAMBURGER");
+            }
+        });
+        btnSidedish.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                showMenuPage("SIDEDISH");
+            }
+        });
+        btnBeverage.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                showMenuPage("BEVERAGE");
             }
         });
 
@@ -107,16 +113,16 @@ public class orderFrame extends JFrame {
         startButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                getContentPane().getComponent(0).setVisible(true);  // banner
-                getContentPane().getComponent(1).setVisible(true);  // menuPage
-                getContentPane().getComponent(2).setVisible(true);  // basketArea
-                getContentPane().getComponent(3).setVisible(true);  // btnPay
-                getContentPane().getComponent(4).setVisible(true);  // categoryArea
-                panel.setVisible(false);
+                cardLayout.show(mainPanel, "menuPanel");
             }
         });
 
         return panel;
+    }
+
+    private void showMenuPage(String pageName) {
+        cardLayout.show(mainPanel, "menuPanel");
+        menuPagePanel.showPage(pageName);
     }
 
     public static void main(String[] args) {
@@ -128,4 +134,3 @@ public class orderFrame extends JFrame {
         });
     }
 }
-
