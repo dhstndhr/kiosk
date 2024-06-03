@@ -1,64 +1,117 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.text.SimpleDateFormat;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class order extends JPanel {
-    static final int MAX_SIZE = 100;
-    ArrayList<Menu> orderList;
-    Date today;
-    static int orderNum = 0;
-    SimpleDateFormat form;
-    static JPanel alermPanel = new JPanel();
-    static JPanel basketPanel = new JPanel();
+    private ArrayList<String> orderList;
+    private JPanel itemsPanel;
 
     public order() {
-        init();
-        today = new Date();
+        setLayout(new BorderLayout());
+        setBackground(Color.white);
         orderList = new ArrayList<>();
-        form = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a");
-        add(alermPanel);
-        add(basketPanel);
+
+        itemsPanel = new JPanel();
+        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
+        itemsPanel.setBackground(Color.white);
+
+        // 스크롤 가능하게 설정
+        JScrollPane scrollPane = new JScrollPane(itemsPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(500, 200));
+
+        add(scrollPane, BorderLayout.CENTER);
     }
 
-    static void init() {
-        JLabel noItems = new JLabel("no items in basket");
-        JLabel yes = new JLabel("확인");
-        alermPanel.setLayout(new FlowLayout());
-        alermPanel.setSize(200, 50);
-        alermPanel.add(noItems);
-        alermPanel.add(yes);
-        alermPanel.setVisible(false);
-        yes.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                alermPanel.setVisible(false);
-            }
-        });
-        basketPanel.setLayout(new GridLayout(10, 1));
-        basketPanel.setSize(500, 100);
-    }
-
-    void goToPay() {
-        if (orderList.size() != 0) {
-            // 결제 시스템으로 넘김
-        } else {
-            alermPanel.setVisible(true);
+    public void addToOrder(String itemName, String sideOption, String drinkOption, int price) {
+        String orderItem = itemName;
+        if (sideOption != null && drinkOption != null) {
+            orderItem += " (사이드: " + sideOption + ", 음료: " + drinkOption + ")";
         }
+
+        boolean itemExists = false;
+        for (Component comp : itemsPanel.getComponents()) {
+            if (comp instanceof JPanel) {
+                JPanel panel = (JPanel) comp;
+                JLabel label = (JLabel) panel.getComponent(0);
+                if (label.getText().equals(orderItem)) {
+                    JLabel quantityLabel = (JLabel) panel.getComponent(2); // 2번째 인덱스에서 라벨 가져오기
+                    int quantity = Integer.parseInt(quantityLabel.getText());
+                    quantityLabel.setText(String.valueOf(++quantity));
+                    itemExists = true;
+                    break;
+                }
+            }
+        }
+
+        if (!itemExists) {
+            JPanel itemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            itemPanel.setPreferredSize(new Dimension(500, 20)); // 크기 설정
+
+            JLabel itemLabel = new JLabel(orderItem);
+            JLabel priceLabel = new JLabel(String.valueOf(price) + "원");
+            JLabel quantityLabel = new JLabel("1");
+
+            JButton minusButton = new JButton("-");
+            JButton plusButton = new JButton("+");
+            JButton deleteButton = new JButton("취소");
+
+            minusButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int quantity = Integer.parseInt(quantityLabel.getText());
+                    if (quantity > 1) {
+                        quantityLabel.setText(String.valueOf(--quantity));
+                    }
+                }
+            });
+
+            plusButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int quantity = Integer.parseInt(quantityLabel.getText());
+                    quantityLabel.setText(String.valueOf(++quantity));
+                }
+            });
+
+            deleteButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    removeItem(itemPanel);
+                }
+            });
+
+            itemPanel.add(itemLabel);
+            itemPanel.add(minusButton);
+            itemPanel.add(quantityLabel);
+            itemPanel.add(plusButton);
+            itemPanel.add(priceLabel);
+            itemPanel.add(deleteButton);
+
+            itemsPanel.add(itemPanel);
+        }
+
+        revalidate();
+        repaint();
     }
 
-    Date getDate() {
-        return today;
+    private void removeItem(JPanel itemPanel) {
+        itemsPanel.remove(itemPanel);
+        revalidate();
+        repaint();
     }
 
-    void allCancel() {
-        // 장바구니 내의 항목을 지움.
+    public void clearOrder() {
+        itemsPanel.removeAll();
+        orderList.clear();
+        revalidate();
+        repaint();
     }
 
-    void showItems() {
-        // 장바구니 항목을 보여줌.
+    public ArrayList<String> getOrderList() {
+        return orderList;
     }
 }
