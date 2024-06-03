@@ -105,13 +105,13 @@ public class orderFrame extends JFrame {
                 showMenuPage("BEVERAGE");
             }
         });
-//
-//        btnPay.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                showPaymentPage();
-//            }
-//        });
+
+        btnPay.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                showPaymentPage();
+            }
+        });
 
         setVisible(true);
     }
@@ -136,64 +136,50 @@ public class orderFrame extends JFrame {
         menuPagePanel.showPage(pageName);
     }
 
-//    private JPanel createPaymentPanel() {
-//        JPanel paymentPanel = new JPanel();
-//        paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.Y_AXIS));
-//
-//        int totalPrice = 0;
-//        for (Component comp : basketPanel.getItemsPanel().getComponents()) {
-//            if (comp instanceof JPanel) {
-//                JPanel itemPanel = (JPanel) comp;
-//                paymentPanel.add(itemPanel);
-//
-//                // Adjusting the indexes for price and quantity labels
-//                JLabel priceLabel = (JLabel) itemPanel.getComponent(3); // Assuming priceLabel is the 4th component
-//                int price = Integer.parseInt(priceLabel.getText().replace("원", ""));
-//                JLabel quantityLabel = (JLabel) itemPanel.getComponent(2); // Assuming quantityLabel is the 3rd component
-//                int quantity = Integer.parseInt(quantityLabel.getText());
-//                totalPrice += price * quantity;
-//            }
-//        }
-//
-//        // 총 가격 및 할인 가격 계산
-//        JLabel totalPriceLabel = new JLabel("총 가격: " + totalPrice + "원");
-//        JLabel discountPriceLabel = new JLabel("할인 가격: " + (totalPrice * 0.9) + "원"); // 예시로 10% 할인 적용
-//
-//        paymentPanel.add(totalPriceLabel);
-//        paymentPanel.add(discountPriceLabel);
-//
-//        JButton cardButton = new JButton("카드");
-//        JButton couponButton = new JButton("쿠폰");
-//
-//        JPanel buttonPanel = new JPanel(new FlowLayout());
-//        buttonPanel.add(cardButton);
-//        buttonPanel.add(couponButton);
-//
-//        paymentPanel.add(buttonPanel);
-//
-//        return paymentPanel;
-////    }
-//
-//    private void showPaymentPage() {
-//        getContentPane().remove(basketScrollPane);
-//        getContentPane().remove(btnPay);
-//        getContentPane().remove(banner);
-//        getContentPane().remove(categoryArea);
-//
-//        JPanel paymentPanel = createPaymentPanel();
-//        mainPanel.add(paymentPanel, "paymentPanel");
-//
-//        cardLayout.show(mainPanel, "paymentPanel");
-//        revalidate();
-//        repaint();
-//    }
+    private JPanel createPaymentPanel() {
+        JPanel paymentPanel = new JPanel();
+        paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.Y_AXIS));
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new orderFrame();
+        int totalPrice = 0;
+        for (Component comp : basketPanel.getItemsPanel().getComponents()) {
+            if (comp instanceof JPanel) {
+                JPanel itemPanel = (JPanel) comp;
+                paymentPanel.add(itemPanel);
+
             }
-        });
+        }
+
+        // 총 가격 및 할인 가격 계산
+        JLabel totalPriceLabel = new JLabel("총 가격: " + totalPrice + "원");
+        JLabel discountPriceLabel = new JLabel("할인 가격: " + (totalPrice * 0.9) + "원"); // 예시로 10% 할인 적용
+
+        paymentPanel.add(totalPriceLabel);
+        paymentPanel.add(discountPriceLabel);
+
+        JButton cardButton = new JButton("카드");
+        JButton couponButton = new JButton("쿠폰");
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(cardButton);
+        buttonPanel.add(couponButton);
+
+        paymentPanel.add(buttonPanel);
+
+        return paymentPanel;
     }
+
+    private void showPaymentPage() {
+        getContentPane().remove(basketScrollPane);
+        getContentPane().remove(btnPay);
+//        getContentPane().remove(banner);
+        getContentPane().remove(categoryArea);
+
+        JPanel paymentPanel = createPaymentPanel();
+        mainPanel.add(paymentPanel, "paymentPanel");
+
+        cardLayout.show(mainPanel, "paymentPanel");
+        revalidate();
+        repaint();
+    }
+
 }
