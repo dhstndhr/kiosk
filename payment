@@ -1,0 +1,61 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+public class payment extends JPanel {
+    private JPanel mainPanel;
+    private JButton cardButton;
+    private JButton couponButton;
+    private JLabel totalPriceLabel;
+    private JLabel discountPriceLabel;
+
+    public payment(order basketPanel) {
+        setLayout(new BorderLayout());
+
+        // 주문 목록 패널
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBackground(Color.white);
+
+        int totalPrice = 0;
+        for (Component comp : basketPanel.getItemsPanel().getComponents()) {
+            if (comp instanceof JPanel) {
+                JPanel itemPanel = (JPanel) comp;
+                mainPanel.add(itemPanel);
+
+                JLabel priceLabel = (JLabel) itemPanel.getComponent(3);
+                int price = Integer.parseInt(priceLabel.getText().replace("원", ""));
+                JLabel quantityLabel = (JLabel) itemPanel.getComponent(2);
+                int quantity = Integer.parseInt(quantityLabel.getText());
+                totalPrice += price * quantity;
+            }
+        }
+
+        // 총 가격 및 할인 가격 계산
+        totalPriceLabel = new JLabel("총 가격: " + totalPrice + "원");
+        discountPriceLabel = new JLabel("할인 가격: " + (totalPrice * 0.9) + "원"); // 예시로 10% 할인 적용
+
+        JPanel pricePanel = new JPanel();
+        pricePanel.setLayout(new GridLayout(2, 1));
+        pricePanel.add(totalPriceLabel);
+        pricePanel.add(discountPriceLabel);
+
+        // 카드 및 쿠폰 버튼
+        cardButton = new JButton("카드");
+        couponButton = new JButton("쿠폰");
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(cardButton);
+        buttonPanel.add(couponButton);
+
+        add(mainPanel, BorderLayout.CENTER);
+//        add(pricePanel, BorderLayout.SOUTH);
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    public void addPaymentListener(ActionListener listener) {
+        cardButton.addActionListener(listener);
+        couponButton.addActionListener(listener);
+    }
+}
