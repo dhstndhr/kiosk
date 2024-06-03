@@ -49,15 +49,20 @@ public class order extends JPanel {
 
         if (!itemExists) {
             JPanel itemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            itemPanel.setPreferredSize(new Dimension(500, 20)); // 크기 설정
+            itemPanel.setPreferredSize(new Dimension(500, 30)); // 크기 설정
+            itemPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2)); // 항목 사이 간격 조정
 
             JLabel itemLabel = new JLabel(orderItem);
-            JLabel priceLabel = new JLabel(String.valueOf(price) + "원");
+            JLabel priceLabel = new JLabel(price + "원");
             JLabel quantityLabel = new JLabel("1");
 
             JButton minusButton = new JButton("-");
             JButton plusButton = new JButton("+");
             JButton deleteButton = new JButton("취소");
+
+            minusButton.setMargin(new Insets(0, 2, 0, 2)); // 버튼 간격 조정
+            plusButton.setMargin(new Insets(0, 2, 0, 2));
+            deleteButton.setMargin(new Insets(0, 2, 0, 2));
 
             minusButton.addActionListener(new ActionListener() {
                 @Override
@@ -84,12 +89,15 @@ public class order extends JPanel {
                 }
             });
 
+            JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+            rightPanel.add(minusButton);
+            rightPanel.add(quantityLabel);
+            rightPanel.add(plusButton);
+            rightPanel.add(priceLabel);
+            rightPanel.add(deleteButton);
+
             itemPanel.add(itemLabel);
-            itemPanel.add(minusButton);
-            itemPanel.add(quantityLabel);
-            itemPanel.add(plusButton);
-            itemPanel.add(priceLabel);
-            itemPanel.add(deleteButton);
+            itemPanel.add(rightPanel);
 
             itemsPanel.add(itemPanel);
         }
@@ -109,6 +117,10 @@ public class order extends JPanel {
         orderList.clear();
         revalidate();
         repaint();
+    }
+
+    public JPanel getItemsPanel() {
+        return itemsPanel;
     }
 
     public ArrayList<String> getOrderList() {
