@@ -4,28 +4,34 @@ import java.awt.*;
 public class menuPage extends JPanel {
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private int[] menuNum;
-    private String[] pageName;
+    private JPanel basketArea;
 
-    public menuPage(String[] pageName, int[] menuNum) {
-        this.pageName = pageName;
-        this.menuNum = menuNum;
+
+    public menuPage(String[] pageNames, int[] menuNums, JPanel basketArea) {
+        this.basketArea = basketArea;
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        for (int i = 0; i < pageName.length; i++) {
-            JPanel page = createMenuPage(pageName[i], menuNum[i]);
-            cardPanel.add(page, pageName[i]);
+        for (String pageName : pageNames) {
+            JPanel page = createMenuPage(pageName);
+            cardPanel.add(page, pageName);
         }
 
         setLayout(new BorderLayout());
         add(cardPanel, BorderLayout.CENTER);
     }
 
-    private JPanel createMenuPage(String pageName, int menuNum) {
-        JPanel page = new JPanel(new GridLayout(4, 4));
-        for (int i = 0; i < menuNum; i++) {
-            page.add(new Menu(pageName + " " + (i + 1), "src/image/hamburger.jpg", 20000));
+    private JPanel createMenuPage(String pageName) {
+        JPanel page = new JPanel(new GridLayout(1, 2)); // 두 개의 메뉴만 표시하도록 GridLayout 설정
+        if (pageName.equals("HAMBURGER")) {
+            page.add(new Menu("불고기 버거", "img/불고기 버거.png", 5000, basketArea));
+            page.add(new Menu("새우 버거", "img/새우버거.png", 6000, basketArea));
+        } else if (pageName.equals("SIDEDISH")) {
+            page.add(new Menu("감자튀김", "img/감자튀김.png", 2000, basketArea));
+            page.add(new Menu("치즈스틱", "img/치즈스틱.png", 3000, basketArea));
+        } else if (pageName.equals("BEVERAGE")) {
+            page.add(new Menu("콜라", "img/콜라.png", 1500, basketArea));
+            page.add(new Menu("사이다", "img/사이다.png", 2000, basketArea));
         }
         return page;
     }
